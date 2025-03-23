@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
 import axios from "axios";
+import { useState, CSSProperties } from "react";
+import BounceLoader from "react-spinners/BounceLoader";
 import { config } from "dotenv";
 config();
 
@@ -8,10 +9,19 @@ interface videoUrl {
   format: string;
   url: string;
 }
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
+};
+
 const uploadVIdeo = () => {
   const [video, setVideo] = useState<File | null>(null);
   const [videoURls, setvideoURls] = useState<videoUrl[] | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  let [color, setColor] = useState("#000000");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -102,12 +112,11 @@ const uploadVIdeo = () => {
       };
 
       const checkAllFormats = async () => {
-     
         for (const format of videoFormats) {
           if (!completedFormats.includes(format)) {
             const result = await fetchVideoBlob(format);
             if (result) {
-              setvideoURls((prev) => [...(prev || [] ), result]);
+              setvideoURls((prev) => [...(prev || []), result]);
               completedFormats.push(result.format);
             }
           }
@@ -124,7 +133,7 @@ const uploadVIdeo = () => {
       checkAllFormats();
     } catch (error) {
       console.error("Error while checking video status:", error);
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -135,50 +144,67 @@ const uploadVIdeo = () => {
     setVideo(file);
   };
 
-  if(isLoading) {
-    return <div>Loading...</div>;
-  }
-  
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col items-center justify-center mx-auto mt-20">
-          <h1>
-            {" "}
-            UPload VIdeo and get diferent formats of that video 360P , 480P ,
-            720P, 1080P
-          </h1>
-          <input
-            type="file"
-            name="video"
-            onChange={handleChange}
-            className="form bg-gray-100 p-4 rounded-md borde border-black mt-12"
-          />
-          <button
-            type="submit"
-            className="bg-purple-800 rounded-md p-4 px-8 mt-8 text-white"
-          >
-            Upload
-          </button>
-        </div>
-      </form>
-
-      <div className="video-gallery mt-12 flex justify-evenly">
-        {videoURls && videoURls.length > 0
-          ? videoURls.map((videoUrl: videoUrl, index) => (
-              <div key={index} className="video-container mt-6">
-                <h3>Video {index + 1}</h3>
-                <p> {videoUrl.format} </p>
-                <video
-                  src={videoUrl.url}
-                  controls
-                  className="w-full max-w-lg border border-gray-300 rounded-md"
-                />
-              </div>
-            ))
-          : ""}
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center flex-col justify-center">
+        <BounceLoader
+          color={color}
+          loading={isLoading}
+          cssOverride={override}
+          size={70}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+        <h1 className="font-bold text-xl mt-8"> Please wait Loading ...</h1>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen py-10 mt-24">
+    <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col items-center">
+        <h1 className="text-3xl font-bold text-purple-800 mb-4">YiBe</h1>
+        <p className="text-gray-400 text-sm mb-4">- Video Transcoder</p>
+        <p className="text-gray-600 text-center mb-8">
+          Upload your video and get different formats like <b>360P</b>, <b>480P</b>, and <b>720P</b>.
+        </p>
+        <input
+          type="file"
+          name="video"
+          onChange={handleChange}
+          className="bg-gray-100 p-3 rounded-lg border border-gray-300 w-full mb-6 focus:ring-2 focus:ring-purple-400"
+        />
+        <button
+          type="submit"
+          className="bg-purple-800 hover:bg-purple-900 text-white font-semibold py-3 px-6 rounded-lg shadow-md cursor-pointer"
+        >
+          Upload
+        </button>
+      </div>
+    </form>
+  
+    <div className="video-gallery mt-16 px-4">
+      {videoURls && videoURls.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videoURls.map((videoUrl: videoUrl, index) => (
+            <div key={index} className="bg-white shadow-md rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Video {index + 1}</h3>
+              <p className="text-sm text-gray-500 mb-4">Format: {videoUrl.format}</p>
+              <video
+                src={videoUrl.url}
+                controls
+                className="w-full rounded-lg border border-gray-300"
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 text-center">No videos uploaded yet.</p>
+      )}
     </div>
+  </div>
+  
   );
 };
 
