@@ -44,7 +44,6 @@ app.use("/api/v1/transcoder", router);
 
 app.post("/start", (req, res) => {
   const {videoId} = req.body;
-  console.log("videoId", videoId);
 
   res.send("started");
   init(videoId);
@@ -52,11 +51,10 @@ app.post("/start", (req, res) => {
 
 const init = async (videoId : string) => {
   try {
-    console.log("started ...");
+    ("started ...");
     const { Messages } = await sQSClient.send(command);
-    console.log("messages", Messages);
     if (!Messages) {
-      console.log("NO message in queue ");
+      ("NO message in queue ");
       return;
     }
 
@@ -67,7 +65,6 @@ const init = async (videoId : string) => {
         continue;
       }
       const event = JSON.parse(Body);
-      console.log("event", event);
       if ("Service" in event && "Event" in event) {
 
         if (event.Event === "s3:TestEvent") {
@@ -129,13 +126,14 @@ const init = async (videoId : string) => {
     // spin the container
     // delete the message from queue
   } catch (error) {
-    console.log("error", error);
+  console.log(error);
   }
 };
 
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

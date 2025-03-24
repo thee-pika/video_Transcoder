@@ -21,12 +21,10 @@ router.get("/", (req, res) => {
 });
 
 router.post("/upload-pre-signed-url", async (req, res) => {
-  console.log("some one hitted me!!");
-
   const { name, type } = req.body;
-  console.log("req.body", req.body);
+  
   const videoId = "video-" + uuidv4();
-  console.log("videoId", videoId);
+  
 
   const command = new PutObjectCommand({
     Bucket: process.env.BUCKET_NAME!,
@@ -42,11 +40,9 @@ router.post("/upload-pre-signed-url", async (req, res) => {
 });
 
 router.post("/get-pre-signed-url", async (req, res) => {
-  console.log("some one hitted me!! get");
+  ("some one hitted me!! get");
 
   const { videoId } = req.body;
-  console.log("req.body", req.body);
-  console.log("videoId", videoId);
 
   const command = new GetObjectCommand({
     Bucket: process.env.PROD_BUCKET_NAME!,
