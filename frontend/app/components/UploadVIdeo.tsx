@@ -26,7 +26,6 @@ const uploadVIdeo = () => {
     e.preventDefault();
 
     if (!video) {
-      console.log("No video selected");
       return;
     }
 
@@ -45,11 +44,9 @@ const uploadVIdeo = () => {
       }
     );
 
-    console.log("res", res);
-    const { url, videoId } = res.data;
-    console.log("url", url);
-    console.log("videoid", videoId);
 
+    const { url, videoId } = res.data;
+  
     const uploadResponse = await axios.put(url, video, {
       headers: {
         "Content-Type": video!.type,
@@ -69,14 +66,12 @@ const uploadVIdeo = () => {
         }
       );
 
-      console.log("File uploaded successfully!");
+      ("File uploaded successfully!");
       setTimeout(() => {
-        console.log("videoid1", videoId);
+       
         checkStatusAndGetBlobs(videoId);
       }, 3000);
-    } else {
-      console.log("File upload failed:", uploadResponse.statusText);
-    }
+    } 
   };
 
   const checkStatusAndGetBlobs = async (videoId: string) => {
@@ -96,17 +91,15 @@ const uploadVIdeo = () => {
               },
             }
           );
-          console.log("res", res);
-          const { url } = res.data;
 
-          console.log("url", url);
+          const { url } = res.data;
 
           const videoBlob = await axios.get(url, { responseType: "blob" });
 
-          console.log(`Video for format ${format} fetched successfully.`);
+          (`Video for format ${format} fetched successfully.`);
           return { format, url: URL.createObjectURL(videoBlob.data) };
         } catch (error) {
-          console.log(`Video format ${format} not ready yet. Retrying...`);
+          (`Video format ${format} not ready yet. Retrying...`);
           return null;
         }
       };
@@ -125,20 +118,19 @@ const uploadVIdeo = () => {
         if (completedFormats.length < videoFormats.length) {
           setTimeout(checkAllFormats, 5000); // Retry after 5 seconds.
         } else {
-          console.log("All video formats are ready.");
+          ("All video formats are ready.");
           setIsLoading(false);
         }
       };
 
       checkAllFormats();
     } catch (error) {
-      console.error("Error while checking video status:", error);
       setIsLoading(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
+    (e.target.files);
     const file = e.target.files![0];
 
     setVideo(file);
